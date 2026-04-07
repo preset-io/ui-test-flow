@@ -1,0 +1,32 @@
+version: "1.0"
+name: "Sample Login Test"
+url: "http://localhost:8080/login/"
+
+steps:
+  - name: "Navigate to login page"
+    action: "goto"
+    url: "{{ base_url }}/login/"
+
+  - name: "Enter credentials"
+    action: "fill"
+    selectors:
+      - selector: 'input[name="username"]'
+        value: "admin"
+      - selector: 'input[name="password"]'
+        value: "admin"
+
+  - name: "Click login button"
+    action: "click"
+    selector: 'button[type="submit"]'
+
+  - name: "Verify dashboard loads"
+    action: "wait_for"
+    selector: '.dashboard-content'
+    timeout: 10000
+
+evaluators:
+  - name: "all_steps_completed"
+    type: "execution_successful"
+  - name: "no_console_errors"
+    type: "console_errors"
+    max_errors: 0

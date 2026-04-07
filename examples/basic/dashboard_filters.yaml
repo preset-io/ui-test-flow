@@ -1,0 +1,254 @@
+# Superset Dashboard Filter Test
+#
+# This test validates dashboard filter functionality in Apache Superset.
+# It demonstrates a real-world Preset use case for testing PR changes.
+#
+# Scenario: A PR claims to fix dashboard filter application issues.
+# This test verifies that:
+#   1. Users can login to Superset
+#   2. Dashboard loads correctly with filter components
+#   3. Filters can be applied and charts update accordingly
+#   4. URL parameters reflect the applied filter state
+#
+# Reference: https://docs.preset.io/docs/managing-filters
+#
+# Usage:
+#   uitestflow run examples/basic/dashboard_filters.yaml --profile staging
+
+version: "1.0"
+name: "Superset Dashboard Filter Test"
+description: "Verify dashboard filter functionality works correctly"
+
+# Target Superset instance
+# This example uses the URL from the project spec
+url: "http://35.85.221.158:8080"
+
+# Authentication for Superset
+auth:
+  type: "form"
+  username: "admin"
+  password: "admin"
+
+# Browser configuration
+browser:
+  headless: false
+  viewport:
+    width: 1920
+    height: 1080
+  device: "Desktop"
+
+# Test steps
+steps:
+  # ============================================
+  # Phase 1: Authentication
+  # ============================================
+
+  - name: "Navigate to Superset login page"
+    action: "goto"
+    url: "{{ base_url }}/login/"
+    screenshot: true
+
+  - name: "Wait for login form to be visible"
+    action: "wait_for"
+    selector: 'input[name="username"]'
+    timeout: 5000
+
+  - name: "Enter admin username"
+    action: "fill"
+    selector: 'input[name="username"]'
+    value: "{{ auth.username }}"
+
+  - name: "Enter admin password"
+    action: "fill"
+    selector: 'input[name="password"]'
+    value: "{{ auth.password }}"
+
+  - name: "Submit login form"
+    action: "click"
+    selector: 'button[type="submit"]'
+
+  - name: "Wait for successful login redirect"
+    action: "wait_for"
+    # Wait for any of these selectors that indicate we're logged in
+    selector: '.dashboard-list, .welcome-page, [data-test="dashboard-list"]'
+    timeout: 10000
+    screenshot: true
+
+  # ============================================
+  # Phase 2: Navigate to Dashboard
+  # ============================================
+
+  - name: "Navigate to dashboards list"
+    action: "goto"
+    url: "{{ base_url }}/dashboard/list/"
+
+  - name: "Wait for dashboard list to load"
+    action: "wait_for"
+    selector: '[data-test="dashboard-list"], .dashboard-list-view'
+    timeout: 10000
+
+  # Click the first dashboard in the list
+  - name: "Open first dashboard with filters"
+    action: "click"
+    # This selector may need adjustment based on actual Superset DOM structure
+    selector: '[data-test="dashboard-list-item"]:first-child a, .dashboard-list-view tbody tr:first-child a'
+    screenshot: true
+
+  # ============================================
+  # Phase 3: Wait for Dashboard to Load
+  # ============================================
+
+  - name: "Wait for dashboard content to load"
+    action: "wait_for"
+    selector: '.dashboard-content, [data-test="dashboard-content"]'
+    timeout: 15000
+
+  - name: "Wait for dashboard filters to appear"
+    action: "wait_for"
+    selector: '.dashboard-filters, [data-test="dashboard-filters"], .filter-container'
+    timeout: 10000
+    screenshot: true
+
+  # Wait for network to settle (all charts loaded)
+  - name: "Wait for all charts to load"
+    action: "wait_for_network_idle"
+    timeout: 20000
+
+  # ============================================
+  # Phase 4: Interact with Filters
+  # ============================================
+
+  - name: "Capture dashboard state before filter"
+    action: "screenshot"
+    name: "before_filter_application"
+
+  # Click on a filter dropdown
+  - name: "Click filter dropdown"
+    action: "click"
+    selector: '.filter-dropdown, [data-test="filter-select"], .Select__control'
+    # Note: This selector may need adjustment based on the filter component used
+
+  - name: "Wait for filter options to appear"
+    action: "wait_for"
+    selector: '.Select__menu, .filter-options, [data-test="filter-options"]'
+    timeout: 5000
+
+  # Select the first filter option
+  - name: "Select first filter option"
+    action: "click"
+    selector: '.Select__option:first-child, .filter-option:first-child'
+
+  - name: "Apply filter"
+    action: "click"
+    selector: 'button:has-text("Apply"), [data-test="apply-filter"]'
+    # Some Superset versions auto-apply, this may be optional
+
+  # ============================================
+  # Phase 5: Verify Filter Applied
+  # ============================================
+
+  # Wait for charts to update after filter application
+  - name: "Wait for charts to update"
+    action: "wait_for_network_idle"
+    timeout: 15000
+
+  - name: "Capture dashboard state after filter"
+    action: "screenshot"
+    name: "after_filter_application"
+
+  # Verify URL contains filter parameters
+  - name: "Verify URL contains filter parameters"
+    action: "expect"
+    assertion: "url_contains"
+    value: "preselect_filters"
+
+  # Verify dashboard still shows content (no errors)
+  - name: "Verify dashboard content still visible"
+    action: "expect"
+    assertion: "element_visible"
+    selector: '.dashboard-content, [data-test="dashboard-content"]'
+
+  # Verify at least one chart is visible
+  - name: "Verify charts are visible"
+    action: "expect"
+    assertion: "element_visible"
+    selector: '.chart-container, [data-test="chart-container"]'
+
+  # Optional: Verify filter badge shows applied filter
+  - name: "Verify filter badge appears"
+    action: "expect"
+    assertion: "element_visible"
+    selector: '.filter-badge, [data-test="filter-badge"]'
+    # This step may fail if implementation doesn't use badges
+
+# Evaluators - comprehensive validation
+evaluators:
+  # Basic execution success
+  - name: "all_steps_completed"
+    type: "execution_successful"
+    description: "All test steps executed without errors"
+
+  # No JavaScript errors
+  - name: "no_console_errors"
+    type: "console_errors"
+    max_errors: 0
+    description: "No console errors during test execution"
+    # Note: Some Superset versions may have non-critical warnings
+    # You may want to set max_errors: 5 for warnings
+
+  # URL validation
+  - name: "url_has_filter_params"
+    type: "url_pattern"
+    pattern: "preselect_filters|native_filters"
+    description: "URL contains filter parameters after applying filters"
+
+  # Performance check
+  - name: "dashboard_load_performance"
+    type: "performance"
+    max_load_time: 10000
+    description: "Dashboard loads within 10 seconds"
+
+  # Network requests validation
+  - name: "api_calls_successful"
+    type: "network_requests"
+    expected_status: 200
+    pattern: "/api/v1/chart/data"
+    description: "Chart data API calls return 200 OK"
+
+  # Visual validation (optional - requires baseline)
+  # - name: "dashboard_visual_regression"
+  #   type: "screenshot_comparison"
+  #   baseline: "dashboard_filters_baseline.png"
+  #   threshold: 0.05  # 5% difference allowed
+  #   description: "Dashboard appearance matches baseline"
+
+# Retry configuration
+# Dashboard tests can be flaky due to network/loading times
+retry:
+  max_attempts: 2
+  delay: 2000
+  exponential_backoff: true
+
+# Tags for organization
+tags:
+  - "superset"
+  - "dashboard"
+  - "filters"
+  - "critical"
+  - "preset"
+  - "e2e"
+
+# Metadata
+metadata:
+  author: "Preset QA Team"
+  related_pr: "#35152"
+  related_docs: "https://docs.preset.io/docs/managing-filters"
+  test_type: "functional"
+  priority: "high"
+
+# Notifications (optional)
+# Can be configured to alert on failure
+notifications:
+  on_failure:
+    - slack: "#qa-alerts"
+    - email: "qa-team@preset.io"

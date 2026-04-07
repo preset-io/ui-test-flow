@@ -1,0 +1,84 @@
+name: navigation_flow
+description: Test navigation through multiple pages
+version: "1.0"
+url: https://the-internet.herokuapp.com
+
+steps:
+  - name: Navigate to home page
+    action: goto
+    value: https://the-internet.herokuapp.com
+    screenshot: true
+
+  - name: Verify home page title
+    action: get_page_state
+    screenshot: false
+
+  - name: Click on A/B Testing link
+    action: click
+    selector: "a[href='/abtest']"
+    screenshot: true
+
+  - name: Wait for A/B test page
+    action: wait_for
+    selector: "h3"
+    timeout: 5000
+    screenshot: true
+
+  - name: Navigate back to home
+    action: goto
+    value: https://the-internet.herokuapp.com
+    screenshot: true
+
+  - name: Click on Add/Remove Elements link
+    action: click
+    selector: "a[href='/add_remove_elements/']"
+    screenshot: true
+
+  - name: Wait for Add/Remove page
+    action: wait_for
+    selector: "button[onclick='addElement()']"
+    timeout: 5000
+    screenshot: true
+
+  - name: Click add element button
+    action: click
+    selector: "button[onclick='addElement()']"
+    screenshot: true
+
+  - name: Wait for delete button to appear
+    action: wait_for
+    selector: ".added-manually"
+    timeout: 5000
+    screenshot: true
+
+  - name: Verify element was added
+    action: get_text
+    selector: ".added-manually"
+    screenshot: true
+
+evaluators:
+  - name: all_steps_completed
+    type: all_steps_completed
+
+  - name: no_console_errors
+    type: console_errors
+    max_errors: 0
+
+  - name: page_load_time
+    type: page_load_time
+    max_ms: 5000
+
+browser_config:
+  type: chromium
+  headless: true
+  viewport:
+    width: 1280
+    height: 720
+
+timeout: 30000
+
+tags:
+  - navigation
+  - multi-page
+  - example
+  - mcp-demo

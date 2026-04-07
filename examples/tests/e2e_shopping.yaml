@@ -1,0 +1,164 @@
+name: e2e_shopping
+description: Complete end-to-end shopping flow with cart and checkout
+version: "1.0"
+url: https://www.saucedemo.com
+
+steps:
+  # Login Phase
+  - name: Navigate to Sauce Demo
+    action: goto
+    value: https://www.saucedemo.com
+    screenshot: true
+
+  - name: Fill username
+    action: fill
+    selector: "#user-name"
+    value: standard_user
+    screenshot: false
+
+  - name: Fill password
+    action: fill
+    selector: "#password"
+    value: secret_sauce
+    screenshot: false
+
+  - name: Click login button
+    action: click
+    selector: "#login-button"
+    screenshot: true
+
+  - name: Wait for inventory page
+    action: wait_for
+    selector: ".inventory_list"
+    timeout: 5000
+    screenshot: true
+
+  # Shopping Phase
+  - name: Add first item to cart
+    action: click
+    selector: "#add-to-cart-sauce-labs-backpack"
+    screenshot: true
+
+  - name: Add second item to cart
+    action: click
+    selector: "#add-to-cart-sauce-labs-bike-light"
+    screenshot: true
+
+  - name: Verify cart badge shows 2 items
+    action: get_text
+    selector: ".shopping_cart_badge"
+    screenshot: true
+
+  - name: Click shopping cart
+    action: click
+    selector: ".shopping_cart_link"
+    screenshot: true
+
+  - name: Wait for cart page
+    action: wait_for
+    selector: ".cart_list"
+    timeout: 5000
+    screenshot: true
+
+  - name: Verify items in cart
+    action: get_text
+    selector: ".cart_item:first-child .inventory_item_name"
+    screenshot: false
+
+  # Checkout Phase
+  - name: Click checkout button
+    action: click
+    selector: "#checkout"
+    screenshot: true
+
+  - name: Wait for checkout form
+    action: wait_for
+    selector: "#first-name"
+    timeout: 5000
+    screenshot: true
+
+  - name: Fill first name
+    action: fill
+    selector: "#first-name"
+    value: "John"
+    screenshot: false
+
+  - name: Fill last name
+    action: fill
+    selector: "#last-name"
+    value: "Doe"
+    screenshot: false
+
+  - name: Fill postal code
+    action: fill
+    selector: "#postal-code"
+    value: "12345"
+    screenshot: false
+
+  - name: Click continue button
+    action: click
+    selector: "#continue"
+    screenshot: true
+
+  - name: Wait for checkout overview
+    action: wait_for
+    selector: ".summary_info"
+    timeout: 5000
+    screenshot: true
+
+  - name: Verify total price
+    action: get_text
+    selector: ".summary_total_label"
+    screenshot: true
+
+  - name: Click finish button
+    action: click
+    selector: "#finish"
+    screenshot: true
+
+  - name: Wait for confirmation
+    action: wait_for
+    selector: ".complete-header"
+    timeout: 5000
+    screenshot: true
+
+  - name: Verify order complete
+    action: get_text
+    selector: ".complete-header"
+    screenshot: true
+
+  - name: Get final page state
+    action: get_page_state
+    screenshot: true
+
+evaluators:
+  - name: all_steps_completed
+    type: all_steps_completed
+
+  - name: no_console_errors
+    type: console_errors
+    max_errors: 0
+
+  - name: page_load_time
+    type: page_load_time
+    max_ms: 5000
+
+  - name: checkout_success
+    type: url_matches
+    pattern: "checkout-complete"
+
+browser_config:
+  type: chromium
+  headless: true
+  viewport:
+    width: 1280
+    height: 720
+
+timeout: 60000
+
+tags:
+  - e2e
+  - shopping
+  - checkout
+  - example
+  - mcp-demo

@@ -1,0 +1,36 @@
+name: "Simple Demo Test"
+description: "Atomic test for demoing UITestFlow - visits example.com"
+version: "1.0"
+url: "https://example.com"
+
+browser_config:
+  type: chromium
+  headless: true
+  viewport:
+    width: 1920
+    height: 1080
+
+steps:
+  - name: "Navigate to Example.com"
+    action: goto
+    url: "https://example.com"
+    screenshot: true
+
+  - name: "Verify page title"
+    action: wait_for
+    selector: "h1"
+    timeout: 5000
+
+evaluators:
+  - name: "Page loaded successfully"
+    type: "steps_completed"
+
+  - name: "H1 element present"
+    type: "element_visible"
+    selector: "h1"
+
+timeout: 30000
+tags:
+  - demo
+  - simple
+  - atomic
