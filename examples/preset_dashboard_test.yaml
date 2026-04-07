@@ -1,0 +1,58 @@
+name: "Preset Manager - Dashboard Navigation Test"
+description: "Test dashboard navigation and UI elements in authenticated state"
+version: "1.0"
+url: "http://manager.local.preset.zone/app/"
+
+steps:
+  - name: "Wait for page to load"
+    action: wait
+    timeout: 2000
+    description: "Give page time to fully load"
+    screenshot: true
+
+  - name: "Check for any main content"
+    action: wait_for
+    selector: "body"
+    timeout: 5000
+    description: "Verify page body loaded"
+    screenshot: true
+
+  - name: "Take final screenshot"
+    action: wait
+    timeout: 1000
+    screenshot: true
+    description: "Capture final state"
+
+evaluators:
+  - name: "Authenticated URL"
+    type: url_matches
+    pattern: "(?!.*login).*"
+    description: "Should not be on login page"
+
+  - name: "Page loaded successfully"
+    type: page_load_time
+    max_ms: 5000
+    description: "Dashboard should load quickly"
+
+  - name: "No console errors"
+    type: console_errors
+    max_errors: 0
+    description: "Should have no critical console errors"
+
+browser_config:
+  type: chromium
+  headless: true
+  viewport:
+    width: 1920
+    height: 1080
+
+timeout: 30000
+retry:
+  max_attempts: 2
+  delay_ms: 1000
+
+tags:
+  - dashboard
+  - navigation
+  - authenticated
+  - preset-manager

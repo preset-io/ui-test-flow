@@ -1,0 +1,83 @@
+name: search_workflow
+description: Test search functionality with result validation
+version: "1.0"
+url: https://www.wikipedia.org
+
+steps:
+  - name: Navigate to Wikipedia
+    action: goto
+    value: https://www.wikipedia.org
+    screenshot: true
+
+  - name: Wait for search input
+    action: wait_for
+    selector: "#searchInput"
+    timeout: 5000
+    screenshot: false
+
+  - name: Fill search query
+    action: fill
+    selector: "#searchInput"
+    value: "Playwright"
+    screenshot: true
+
+  - name: Click search button
+    action: click
+    selector: "button[type='submit']"
+    screenshot: true
+
+  - name: Wait for search results
+    action: wait_for
+    selector: "#firstHeading"
+    timeout: 10000
+    screenshot: true
+
+  - name: Verify page title
+    action: get_text
+    selector: "#firstHeading"
+    screenshot: true
+
+  - name: Verify content loaded
+    action: wait_for
+    selector: "#mw-content-text"
+    timeout: 5000
+    screenshot: false
+
+  - name: Get page state
+    action: get_page_state
+    screenshot: false
+
+  - name: Check console logs
+    action: get_console_logs
+    screenshot: false
+
+evaluators:
+  - name: all_steps_completed
+    type: all_steps_completed
+
+  - name: no_console_errors
+    type: console_errors
+    max_errors: 5
+
+  - name: page_load_time
+    type: page_load_time
+    max_ms: 10000
+
+  - name: title_contains
+    type: url_matches
+    pattern: "Playwright"
+
+browser_config:
+  type: chromium
+  headless: true
+  viewport:
+    width: 1280
+    height: 720
+
+timeout: 45000
+
+tags:
+  - search
+  - wikipedia
+  - example
+  - mcp-demo

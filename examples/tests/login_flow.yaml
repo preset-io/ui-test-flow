@@ -1,0 +1,65 @@
+name: login_flow
+description: Test user login flow with valid credentials
+version: "1.0"
+url: https://the-internet.herokuapp.com/login
+
+steps:
+  - name: Navigate to login page
+    action: goto
+    value: https://the-internet.herokuapp.com/login
+    screenshot: true
+
+  - name: Fill username field
+    action: fill
+    selector: "#username"
+    value: tomsmith
+    screenshot: false
+
+  - name: Fill password field
+    action: fill
+    selector: "#password"
+    value: SuperSecretPassword!
+    screenshot: false
+
+  - name: Click login button
+    action: click
+    selector: "button[type='submit']"
+    screenshot: true
+
+  - name: Wait for success message
+    action: wait_for
+    selector: ".flash.success"
+    timeout: 5000
+    screenshot: true
+
+  - name: Verify login success
+    action: get_text
+    selector: ".flash.success"
+    screenshot: true
+
+evaluators:
+  - name: all_steps_completed
+    type: all_steps_completed
+
+  - name: no_console_errors
+    type: console_errors
+    max_errors: 0
+
+  - name: url_changed
+    type: url_matches
+    pattern: "/secure"
+
+browser_config:
+  type: chromium
+  headless: true
+  viewport:
+    width: 1280
+    height: 720
+
+timeout: 30000
+
+tags:
+  - login
+  - authentication
+  - example
+  - mcp-demo

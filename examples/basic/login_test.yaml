@@ -1,0 +1,122 @@
+# Simple Login Test Example
+#
+# This test demonstrates basic form authentication with UITestFlow.
+# It navigates to a login page, fills in credentials, submits the form,
+# and verifies successful login.
+#
+# Usage:
+#   uitestflow run examples/basic/login_test.yaml --profile local
+
+version: "1.0"
+name: "Simple Login Test"
+description: "Basic form authentication test demonstrating core UITestFlow features"
+
+# Base URL for the application
+# This can be overridden by the profile configuration
+url: "http://localhost:8080"
+
+# Authentication configuration
+# These values can be overridden by profile settings or environment variables
+auth:
+  type: "form"
+  username: "admin"
+  password: "admin"
+
+# Browser configuration (optional)
+# If not specified, uses profile defaults
+browser:
+  headless: false  # Set to true for CI/CD
+  slowmo: 100      # Slow down actions by 100ms for visibility
+
+# Test steps - executed sequentially
+steps:
+  # Step 1: Navigate to the login page
+  - name: "Navigate to login page"
+    action: "goto"
+    url: "{{ base_url }}/login/"
+    # Screenshot will be captured after this step
+    screenshot: true
+
+  # Step 2: Wait for login form to be visible
+  - name: "Wait for login form"
+    action: "wait_for"
+    selector: 'form[name="login"]'
+    timeout: 5000  # milliseconds
+
+  # Step 3: Fill in the username field
+  - name: "Enter username"
+    action: "fill"
+    selector: 'input[name="username"]'
+    value: "{{ auth.username }}"
+
+  # Step 4: Fill in the password field
+  - name: "Enter password"
+    action: "fill"
+    selector: 'input[name="password"]'
+    value: "{{ auth.password }}"
+    # Capture screenshot before submitting
+    screenshot: true
+
+  # Step 5: Click the login/submit button
+  - name: "Click login button"
+    action: "click"
+    selector: 'button[type="submit"]'
+
+  # Step 6: Wait for successful redirect/navigation
+  # This verifies that login was successful
+  - name: "Wait for dashboard to load"
+    action: "wait_for"
+    selector: '.dashboard-content, .home-page, [data-test="dashboard"]'
+    timeout: 10000
+    screenshot: true
+
+  # Step 7: Verify we're no longer on the login page
+  - name: "Verify redirect from login page"
+    action: "expect"
+    assertion: "url_not_contains"
+    value: "/login"
+
+# Evaluators - determine test success/failure
+# All evaluators must pass for the test to be considered successful
+evaluators:
+  # Verify all steps completed without errors
+  - name: "all_steps_completed"
+    type: "execution_successful"
+    description: "All test steps executed successfully"
+
+  # Check for console errors (JavaScript errors on the page)
+  - name: "no_console_errors"
+    type: "console_errors"
+    max_errors: 0
+    description: "No JavaScript errors in browser console"
+
+  # Verify no unhandled exceptions during test
+  - name: "no_exceptions"
+    type: "no_exceptions"
+    description: "No unhandled exceptions during test execution"
+
+  # Optional: Check page load performance
+  - name: "page_performance"
+    type: "performance"
+    max_load_time: 5000  # milliseconds
+    description: "Login page loads within 5 seconds"
+
+# Retry configuration (optional)
+# If test fails, retry with these settings
+retry:
+  max_attempts: 3
+  delay: 1000  # milliseconds between retries
+  exponential_backoff: true
+
+# Tags for organizing and filtering tests
+tags:
+  - "authentication"
+  - "login"
+  - "smoke-test"
+  - "critical"
+
+# Metadata (optional)
+metadata:
+  author: "UITestFlow Team"
+  version: "1.0"
+  jira_ticket: "TEST-123"

@@ -1,0 +1,75 @@
+name: form_submission
+description: Test form submission with multiple field types
+version: "1.0"
+url: https://the-internet.herokuapp.com/inputs
+
+steps:
+  - name: Navigate to inputs page
+    action: goto
+    value: https://the-internet.herokuapp.com/inputs
+    screenshot: true
+
+  - name: Fill number input
+    action: fill
+    selector: "input[type='number']"
+    value: "42"
+    screenshot: true
+
+  - name: Verify input value
+    action: evaluate_javascript
+    value: |
+      document.querySelector("input[type='number']").value === "42"
+    screenshot: false
+
+  - name: Navigate to checkboxes
+    action: goto
+    value: https://the-internet.herokuapp.com/checkboxes
+    screenshot: true
+
+  - name: Check first checkbox
+    action: click
+    selector: "input[type='checkbox']:first-child"
+    screenshot: true
+
+  - name: Navigate to dropdown
+    action: goto
+    value: https://the-internet.herokuapp.com/dropdown
+    screenshot: true
+
+  - name: Select option from dropdown
+    action: select
+    selector: "#dropdown"
+    value: "1"
+    screenshot: true
+
+  - name: Verify dropdown selection
+    action: get_text
+    selector: "#dropdown option[selected]"
+    screenshot: false
+
+evaluators:
+  - name: all_steps_completed
+    type: all_steps_completed
+
+  - name: no_console_errors
+    type: console_errors
+    max_errors: 0
+
+  - name: page_load_time
+    type: page_load_time
+    max_ms: 5000
+
+browser_config:
+  type: chromium
+  headless: true
+  viewport:
+    width: 1280
+    height: 720
+
+timeout: 30000
+
+tags:
+  - forms
+  - inputs
+  - example
+  - mcp-demo

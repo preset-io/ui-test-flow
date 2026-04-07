@@ -1,0 +1,305 @@
+/* UITestFlow TUI Styles */
+
+/* Base application styles */
+Screen {
+    background: $surface;
+}
+
+/* Header and Footer */
+Header {
+    background: $primary;
+    color: $background;
+}
+
+Footer {
+    background: $surface;
+}
+
+/* Containers */
+Container {
+    background: $panel;
+    border: solid $border;
+}
+
+Container.focused {
+    border: solid $primary;
+}
+
+/* Scrollable containers */
+VerticalScroll, ScrollableContainer {
+    background: $surface;
+}
+
+/* Buttons */
+Button {
+    background: $primary;
+    color: $background;
+    border: none;
+    padding: 0 2;
+    margin: 0 1;
+}
+
+Button:hover {
+    background: $secondary;
+}
+
+Button:focus {
+    border: solid $primary;
+}
+
+Button.error {
+    background: $error;
+}
+
+Button.success {
+    background: $success;
+}
+
+Button.warning {
+    background: $warning;
+}
+
+/* Lists */
+ListView {
+    background: $surface;
+    border: solid $border;
+}
+
+ListView:focus {
+    border: solid $primary;
+}
+
+ListItem {
+    padding: 0 1;
+}
+
+ListItem:hover {
+    background: $hover;
+}
+
+ListItem.--highlight {
+    background: $selection;
+}
+
+/* Labels and Static text */
+Label {
+    background: transparent;
+}
+
+Static {
+    background: transparent;
+}
+
+/* Input widgets */
+Input {
+    background: $surface;
+    border: solid $border;
+    padding: 0 1;
+}
+
+Input:focus {
+    border: solid $primary;
+}
+
+/* Tables */
+DataTable {
+    background: $surface;
+    border: solid $border;
+}
+
+DataTable:focus {
+    border: solid $primary;
+}
+
+/* Tree views */
+Tree {
+    background: $surface;
+    border: solid $border;
+}
+
+Tree:focus {
+    border: solid $primary;
+}
+
+/* Panels */
+.panel {
+    background: $panel;
+    border: solid $border;
+    padding: 1;
+    margin: 1;
+}
+
+.panel-header {
+    background: $primary;
+    color: $background;
+    padding: 0 1;
+    text-style: bold;
+}
+
+/* Status indicators */
+.status-success {
+    color: $success;
+    text-style: bold;
+}
+
+.status-error {
+    color: $error;
+    text-style: bold;
+}
+
+.status-warning {
+    color: $warning;
+    text-style: bold;
+}
+
+.status-info {
+    color: $info;
+}
+
+.status-pending {
+    color: $text-muted;
+}
+
+.status-running {
+    color: $primary;
+    text-style: bold;
+}
+
+/* Test result styles */
+.test-passed {
+    color: $success;
+}
+
+.test-failed {
+    color: $error;
+}
+
+.test-running {
+    color: $primary;
+}
+
+/* Code/monospace text */
+.code {
+    background: $surface;
+    border: solid $border;
+    padding: 1;
+    font-family: monospace;
+}
+
+/* Modals */
+ModalScreen {
+    align: center middle;
+}
+
+.modal-dialog {
+    width: 80;
+    height: auto;
+    max-height: 90%;
+    background: $panel;
+    border: thick $primary;
+    padding: 1;
+}
+
+.modal-header {
+    background: $primary;
+    color: $background;
+    padding: 1;
+    text-style: bold;
+    text-align: center;
+}
+
+.modal-content {
+    padding: 1;
+    height: auto;
+}
+
+.modal-footer {
+    padding: 1;
+    height: auto;
+    align: center middle;
+}
+
+/* Tabs */
+Tabs {
+    background: $surface;
+}
+
+Tab {
+    background: $panel;
+    color: $text-muted;
+}
+
+Tab:hover {
+    background: $hover;
+}
+
+Tab.--active {
+    background: $primary;
+    color: $background;
+    text-style: bold;
+}
+
+/* Progress bars */
+ProgressBar {
+    background: $surface;
+    border: solid $border;
+}
+
+/* Horizontal and Vertical layouts */
+Horizontal {
+    height: auto;
+}
+
+Vertical {
+    width: 100%;
+}
+
+/* Utility classes */
+.center {
+    align: center middle;
+}
+
+.bold {
+    text-style: bold;
+}
+
+.italic {
+    text-style: italic;
+}
+
+.muted {
+    color: $text-muted;
+}
+
+.dim {
+    color: $text-disabled;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Screen-specific styles */
+#home-container {
+    padding: 2;
+}
+
+#test-explorer-container {
+    padding: 1;
+}
+
+#test-runner-container {
+    padding: 1;
+}
+
+#results-container {
+    padding: 1;
+}
+
+#profiles-container {
+    padding: 2;
+}
+
+#config-container {
+    padding: 2;
+}

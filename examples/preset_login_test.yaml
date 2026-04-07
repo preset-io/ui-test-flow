@@ -1,0 +1,77 @@
+name: "Preset Manager - Login Flow Test"
+description: "Test the login functionality of Preset Manager"
+version: "1.0"
+url: "http://manager.local.preset.zone/login"
+
+steps:
+  - name: "Verify login page loads"
+    action: wait_for
+    selector: "input[name='email']"
+    timeout: 10000
+    description: "Wait for email input to be visible"
+    screenshot: true
+
+  - name: "Verify password field exists"
+    action: wait_for
+    selector: "input[name='password']"
+    timeout: 5000
+    description: "Check that password field is present"
+    screenshot: true
+
+  - name: "Enter email"
+    action: fill
+    selector: "input[name='email']"
+    value: "admin@preset.zone"
+    description: "Fill in the email field"
+
+  - name: "Enter password"
+    action: fill
+    selector: "input[name='password']"
+    value: "maxlikespizza!"
+    description: "Fill in the password field"
+
+  - name: "Take screenshot before login"
+    action: wait
+    timeout: 500
+    screenshot: true
+    description: "Capture state before clicking login"
+
+  - name: "Click login button"
+    action: click
+    selector: "button[type='submit']"
+    description: "Submit the login form"
+    wait_after: 3000
+
+  - name: "Wait for post-login page"
+    action: wait
+    timeout: 2000
+    description: "Wait for redirect after login"
+    screenshot: true
+
+evaluators:
+  - name: "Login successful"
+    type: url_matches
+    pattern: "(?!.*login).*"
+    description: "URL should not contain 'login' after successful authentication"
+
+  - name: "Page loaded successfully"
+    type: page_load_time
+    max_ms: 5000
+    description: "Page should load within 5 seconds"
+
+browser_config:
+  type: chromium
+  headless: true
+  viewport:
+    width: 1920
+    height: 1080
+
+timeout: 45000
+retry:
+  max_attempts: 2
+  delay_ms: 1000
+
+tags:
+  - login
+  - authentication
+  - preset-manager

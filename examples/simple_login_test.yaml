@@ -1,0 +1,56 @@
+version: "1.0"
+name: "Simple Login Test"
+description: "Test login functionality with admin credentials"
+url: "http://35.85.221.158:8080"
+
+auth:
+  type: "form"
+  username: "admin"
+  password: "admin"
+
+browser:
+  type: "chromium"
+  headless: true
+  viewport:
+    width: 1920
+    height: 1080
+  slow_mo: 100
+
+steps:
+  - name: "Navigate to login page"
+    action: "goto"
+    url: "http://35.85.221.158:8080/login/"
+    screenshot: true
+
+  - name: "Enter username"
+    action: "fill"
+    selector: 'input[name="username"]'
+    value: "admin"
+
+  - name: "Enter password"
+    action: "fill"
+    selector: 'input[name="password"]'
+    value: "admin"
+
+  - name: "Click login button"
+    action: "click"
+    selector: 'button[type="submit"]'
+    screenshot: true
+
+  - name: "Wait for dashboard to load"
+    action: "wait_for"
+    selector: '.dashboard-content'
+    timeout: 10000
+    screenshot: true
+
+evaluators:
+  - name: "all_steps_completed"
+    type: "all_steps_completed"
+
+  - name: "no_console_errors"
+    type: "console_errors"
+    max_errors: 0
+
+  - name: "page_load_performance"
+    type: "performance"
+    max_load_time: 10000

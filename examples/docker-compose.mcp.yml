@@ -1,0 +1,121 @@
+version: '3.8'
+
+# Docker Compose configuration for UITestFlow with MCP enabled
+# This demonstrates how to run UITestFlow with Claude integration in Docker
+
+services:
+  # UITestFlow with MCP enabled
+  uitestflow-mcp:
+    image: uitestflow:latest
+    container_name: uitestflow-mcp
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        - INSTALL_BROWSERS=true
+    environment:
+      # ============================================================================
+      # MCP Feature Flags
+      # ============================================================================
+      UITESTFLOW_MCP_ENABLED: "true"
+      UITESTFLOW_MCP_CLAUDE_ENABLED: "true"
+      UITESTFLOW_MCP_GENERATION_ENABLED: "true"
+      UITESTFLOW_MCP_GUIDED_EXECUTION_ENABLED: "true"
+
+      # ============================================================================
+      # Anthropic API Key (REQUIRED)
+      # ============================================================================
+      # Pass this from host environment or set directly (not recommended for production)
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:?ANTHROPIC_API_KEY must be set}
+
+      # ============================================================================
+      # MCP Server Configuration
+      # ============================================================================
+      UITESTFLOW_MCP_SERVER_ENABLED: "true"
+      UITESTFLOW_MCP_SERVER_PORT: "3001"
+      UITESTFLOW_MCP_SERVER_TRANSPORT: "http"
+      UITESTFLOW_MCP_SERVER_HOST: "0.0.0.0"
+
+      # ============================================================================
+      # Claude Configuration
+      # ============================================================================
+      UITESTFLOW_MCP_CLAUDE_MODEL: "claude-3-5-haiku-20241022"
+      UITESTFLOW_MCP_CLAUDE_MAX_TOKENS: "4096"
+      UITESTFLOW_MCP_CLAUDE_TEMPERATURE: "0.3"
+      UITESTFLOW_MCP_CLAUDE_TIMEOUT: "60"
+
+      # ============================================================================
+      # Test Generation
+      # ============================================================================
+      UITESTFLOW_MCP_GENERATION_AUTO_SAVE: "true"
+      UITESTFLOW_MCP_GENERATION_OUTPUT_DIR: "/app/generated_tests"
+      UITESTFLOW_MCP_GENERATION_INCLUDE_METADATA: "true"
+
+      # ============================================================================
+      # Guided Execution
+      # ============================================================================
+      UITESTFLOW_MCP_GUIDANCE_DETAIL_LEVEL: "standard"
+      UITESTFLOW_MCP_GUIDANCE_MAX_RETRIES: "3"
+      UITESTFLOW_MCP_GUIDANCE_TIMEOUT: "30"
+
+      # ============================================================================
+      # Playwright Configuration
+      # ============================================================================
+      PLAYWRIGHT_BROWSERS_PATH: "/ms-playwright"
+
+      # ============================================================================
+      # General UITestFlow Settings
+      # ============================================================================
+      UITESTFLOW_DEFAULT_HEADLESS: "true"
+      UITESTFLOW_DEFAULT_BROWSER: "chromium"
+      UITESTFLOW_STORAGE_PATH: "/app/test-results"
+      UITESTFLOW_LOG_LEVEL: "INFO"
+
+    ports:
+      # Main API server
+      - "8018:8018"
+      # MCP server (if HTTP transport enabled)
+      - "3001:3001"
+
+    volumes:
+      # Mount test files directory
+      - ../tests:/app/tests:ro
+      # Mount examples directory
+      - ../examples:/app/examples:ro
+      # Mount generated tests (writable)
+      - generated_tests:/app/generated_tests
+      # Mount test results (writable)
+      - test_results:/app/test-results
+      # Mount configuration (optional)
+      - ../.uitest_profiles.yaml:/app/.uitest_profiles.yaml:ro
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8018/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    networks:
+      - uitestflow
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+
+volumes:
+  generated_tests:
+    driver: local
+  test_results:
+    driver: local
+
+networks:
+  uitestflow:
+    driver: bridge
+    name: uitestflow-mcp-network
