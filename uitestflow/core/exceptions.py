@@ -244,7 +244,7 @@ class NotificationError(UITestFlowError):
         """Initialize with notification details.
 
         Args:
-            notification_type: Type of notification (slack, email, pagerduty, etc.)
+            notification_type: Type of notification (slack, email, etc.)
             error_message: Error message from notification attempt
         """
         message = f"Failed to send {notification_type} notification: {error_message}"
