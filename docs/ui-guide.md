@@ -164,7 +164,7 @@ Manage environment configurations:
 2. Enter profile details (name, base URL)
 3. Configure authentication (form, OAuth, custom)
 4. Set browser options (headless, viewport, device emulation)
-5. Configure notifications (Slack, email, PagerDuty)
+5. Configure notifications (Slack, email)
 6. Save and test connectivity
 
 #### 6. Analytics
